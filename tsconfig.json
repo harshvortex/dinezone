@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@dinespot/types": ["./packages/types/src/index.ts"],
+      "@dinespot/ui": ["./packages/ui/src/index.ts"],
+      "@dinespot/utils": ["./packages/utils/src/index.ts"]
+    }
+  }
+}

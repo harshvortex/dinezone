@@ -1,0 +1,249 @@
+{
+  "clientName": "DineSpot API",
+  "version": "1.1",
+  "folders": [
+    {
+      "id": "folder-auth",
+      "name": "🔐 Auth",
+      "containsRequests": [
+        "req-register",
+        "req-login",
+        "req-login-phone",
+        "req-refresh",
+        "req-me",
+        "req-logout"
+      ]
+    },
+    {
+      "id": "folder-restaurants",
+      "name": "🍽️ Restaurants",
+      "containsRequests": [
+        "req-restaurants-search",
+        "req-restaurants-nearby",
+        "req-restaurants-slug",
+        "req-restaurants-availability"
+      ]
+    },
+    {
+      "id": "folder-bookings",
+      "name": "📅 Bookings",
+      "containsRequests": [
+        "req-booking-create",
+        "req-booking-mine",
+        "req-booking-get",
+        "req-booking-cancel"
+      ]
+    },
+    {
+      "id": "folder-system",
+      "name": "💚 System",
+      "containsRequests": ["req-health"]
+    }
+  ],
+  "requests": [
+    {
+      "id": "req-health",
+      "url": "{{baseUrl}}/health",
+      "name": "Health Check",
+      "method": "GET",
+      "sortNum": 0,
+      "headers": []
+    },
+    {
+      "id": "req-register",
+      "url": "{{baseUrl}}/api/v1/auth/register",
+      "name": "Register",
+      "method": "POST",
+      "sortNum": 10,
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Rahul Sharma\",\n  \"email\": \"rahul@example.com\",\n  \"phone\": \"+919876543210\",\n  \"password\": \"Password@123\"\n}"
+      }
+    },
+    {
+      "id": "req-login",
+      "url": "{{baseUrl}}/api/v1/auth/login",
+      "name": "Login (Email + Password)",
+      "method": "POST",
+      "sortNum": 20,
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"rahul@example.com\",\n  \"password\": \"Password@123\"\n}"
+      }
+    },
+    {
+      "id": "req-login-phone",
+      "url": "{{baseUrl}}/api/v1/auth/login/phone",
+      "name": "Login (Phone OTP via Clerk)",
+      "method": "POST",
+      "sortNum": 30,
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"clerkSessionToken\": \"<paste-clerk-session-token-here>\",\n  \"phone\": \"+919876543210\"\n}"
+      }
+    },
+    {
+      "id": "req-refresh",
+      "url": "{{baseUrl}}/api/v1/auth/refresh",
+      "name": "Refresh Token",
+      "method": "POST",
+      "sortNum": 40,
+      "headers": [{ "name": "Content-Type", "value": "application/json" }],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+      }
+    },
+    {
+      "id": "req-me",
+      "url": "{{baseUrl}}/api/v1/auth/me",
+      "name": "Get Current User",
+      "method": "GET",
+      "sortNum": 50,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ]
+    },
+    {
+      "id": "req-logout",
+      "url": "{{baseUrl}}/api/v1/auth/logout",
+      "name": "Logout",
+      "method": "POST",
+      "sortNum": 60,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ]
+    },
+    {
+      "id": "req-restaurants-search",
+      "url": "{{baseUrl}}/api/v1/restaurants?city=Mumbai&hasBuffet=true&page=1&limit=10",
+      "name": "Search Restaurants",
+      "method": "GET",
+      "sortNum": 100,
+      "headers": []
+    },
+    {
+      "id": "req-restaurants-nearby",
+      "url": "{{baseUrl}}/api/v1/restaurants/nearby?lat=19.0596&lng=72.8295&radiusMetres=5000&limit=10",
+      "name": "Nearby Restaurants (PostGIS)",
+      "method": "GET",
+      "sortNum": 110,
+      "headers": []
+    },
+    {
+      "id": "req-restaurants-slug",
+      "url": "{{baseUrl}}/api/v1/restaurants/slug/spice-garden-mumbai",
+      "name": "Get Restaurant by Slug",
+      "method": "GET",
+      "sortNum": 120,
+      "headers": []
+    },
+    {
+      "id": "req-restaurants-availability",
+      "url": "{{baseUrl}}/api/v1/restaurants/{{restaurantId}}/availability?date=2025-07-15&guests=4&type=TABLE",
+      "name": "Check Table Availability",
+      "method": "GET",
+      "sortNum": 130,
+      "headers": []
+    },
+    {
+      "id": "req-booking-create",
+      "url": "{{baseUrl}}/api/v1/bookings",
+      "name": "Create Booking (Table)",
+      "method": "POST",
+      "sortNum": 200,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"bookingType\": \"TABLE\",\n  \"tableId\": \"{{tableId}}\",\n  \"date\": \"2025-07-15\",\n  \"startTime\": \"19:30\",\n  \"endTime\": \"21:30\",\n  \"partySize\": 4,\n  \"totalAmount\": 0,\n  \"paymentMethod\": \"AT_VENUE\",\n  \"specialRequests\": \"Window seat preferred\"\n}"
+      }
+    },
+    {
+      "id": "req-booking-create-buffet",
+      "url": "{{baseUrl}}/api/v1/bookings",
+      "name": "Create Booking (Buffet)",
+      "method": "POST",
+      "sortNum": 210,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"bookingType\": \"BUFFET\",\n  \"buffetSessionId\": \"{{buffetSessionId}}\",\n  \"date\": \"2025-07-20\",\n  \"startTime\": \"12:00\",\n  \"endTime\": \"15:30\",\n  \"partySize\": 6,\n  \"adultsCount\": 4,\n  \"childrenCount\": 2,\n  \"totalAmount\": 4196,\n  \"paymentMethod\": \"ONLINE\"\n}"
+      }
+    },
+    {
+      "id": "req-booking-create-hall",
+      "url": "{{baseUrl}}/api/v1/bookings",
+      "name": "Create Booking (Event Hall)",
+      "method": "POST",
+      "sortNum": 220,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"restaurantId\": \"{{restaurantId}}\",\n  \"bookingType\": \"EVENT_HALL\",\n  \"eventHallId\": \"{{hallId}}\",\n  \"eventName\": \"Birthday Celebration\",\n  \"eventType\": \"Birthday\",\n  \"date\": \"2025-08-10\",\n  \"startTime\": \"18:00\",\n  \"endTime\": \"23:00\",\n  \"partySize\": 100,\n  \"totalAmount\": 95000,\n  \"paymentMethod\": \"ONLINE\",\n  \"specialRequests\": \"Floral arch setup required\"\n}"
+      }
+    },
+    {
+      "id": "req-booking-mine",
+      "url": "{{baseUrl}}/api/v1/bookings/me?page=1&limit=10",
+      "name": "My Bookings",
+      "method": "GET",
+      "sortNum": 230,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ]
+    },
+    {
+      "id": "req-booking-get",
+      "url": "{{baseUrl}}/api/v1/bookings/{{bookingId}}",
+      "name": "Get Booking by ID",
+      "method": "GET",
+      "sortNum": 240,
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ]
+    },
+    {
+      "id": "req-booking-cancel",
+      "url": "{{baseUrl}}/api/v1/bookings/{{bookingId}}/cancel",
+      "name": "Cancel Booking",
+      "method": "PATCH",
+      "sortNum": 250,
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" },
+        { "name": "Authorization", "value": "Bearer {{accessToken}}" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"reason\": \"Change of plans\"\n}"
+      }
+    }
+  ],
+  "environments": [
+    {
+      "id": "env-local",
+      "name": "Local Development",
+      "data": [
+        { "name": "baseUrl",         "value": "http://localhost:4000",  "isSecret": false },
+        { "name": "accessToken",     "value": "",                       "isSecret": true  },
+        { "name": "refreshToken",    "value": "",                       "isSecret": true  },
+        { "name": "restaurantId",    "value": "",                       "isSecret": false },
+        { "name": "tableId",         "value": "",                       "isSecret": false },
+        { "name": "buffetSessionId", "value": "",                       "isSecret": false },
+        { "name": "hallId",          "value": "",                       "isSecret": false },
+        { "name": "bookingId",       "value": "",                       "isSecret": false }
+      ]
+    }
+  ]
+}

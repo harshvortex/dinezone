@@ -1,0 +1,58 @@
+name: API — Build & Deploy to Railway
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/api/**"
+      - "packages/**"
+      - "Dockerfile"
+      - "railway.toml"
+      - ".github/workflows/api.yml"
+
+jobs:
+  validate:
+    name: Typecheck & Prisma Validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: TypeScript typecheck
+        run: pnpm --filter=@dinespot/api typecheck
+
+      - name: Prisma validate schema
+        run: pnpm --filter=@dinespot/api exec prisma validate
+
+  deploy:
+    name: Build & Deploy
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
+
+      - name: Deploy to Railway
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        run: railway up --service dinespot-api --detach
+
+      - name: Wait for deploy health
+        run: |
+          echo "Waiting 30s for Railway to deploy..."
+          sleep 30
+          curl --fail --retry 5 --retry-delay 10 \
+            https://dinespot-api.up.railway.app/health \
+            && echo "✅ API is healthy" || echo "⚠️ Health check failed"

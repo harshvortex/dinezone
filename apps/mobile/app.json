@@ -1,0 +1,70 @@
+{
+  "expo": {
+    "name": "DineSpot",
+    "slug": "dinespot",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "app.dinespot.mobile",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "DineSpot needs your location to find restaurants near you.",
+        "NSLocationAlwaysUsageDescription": "DineSpot uses your location to send reminders when you're near your booked restaurant.",
+        "NSCameraUsageDescription": "DineSpot needs camera access to upload your profile photo.",
+        "NSPhotoLibraryUsageDescription": "DineSpot needs photo library access to upload your profile photo.",
+        "NSCalendarsUsageDescription": "DineSpot needs calendar access to add your bookings.",
+        "NSFaceIDUsageDescription": "DineSpot uses Face ID for quick and secure login.",
+        "NSMicrophoneUsageDescription": "Not used."
+      },
+      "config": {
+        "googleMapsApiKey": "GOOGLE_MAPS_IOS_KEY"
+      }
+    },
+    "android": {
+      "package": "app.dinespot.mobile",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "READ_CALENDAR",
+        "WRITE_CALENDAR",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "USE_BIOMETRIC",
+        "USE_FINGERPRINT"
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "GOOGLE_MAPS_ANDROID_KEY"
+        }
+      }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      [
+        "expo-location",
+        { "locationAlwaysAndWhenInUsePermission": "DineSpot uses your location to find nearby restaurants." }
+      ],
+      "expo-notifications",
+      [
+        "expo-camera",
+        { "cameraPermission": "DineSpot needs camera access to update your profile photo." }
+      ],
+      "expo-calendar"
+    ],
+    "scheme": "dinespot",
+    "experiments": { "typedRoutes": true },
+    "extra": {
+      "apiUrl":          "http://localhost:4000/api/v1",
+      "socketUrl":       "http://localhost:4000",
+      "cloudinaryCloud": "your_cloud_name",
+      "razorpayKeyId":   "rzp_test_CHANGE_ME",
+      "eas": { "projectId": "YOUR_EAS_PROJECT_ID" }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "DineSpot Local",
+      "Group": "Servers",
+      "Host": "postgres",
+      "Port": 5432,
+      "MaintenanceDB": "dinespot_db",
+      "Username": "dinespot",
+      "SSLMode": "prefer",
+      "PassFile": "/pgpassfile"
+    }
+  }
+}

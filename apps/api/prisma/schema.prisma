@@ -1,0 +1,357 @@
+// DineSpot — Prisma Schema
+// Database: PostgreSQL 16 + PostGIS 3.4
+// ORM: Prisma 5
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis, pg_trgm, uuid_ossp(map: "uuid-ossp"), btree_gist]
+}
+
+// ─── ENUMS ───────────────────────────────
+
+enum UserRole {
+  USER
+  RESTAURANT_OWNER
+  ADMIN
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum CuisineType {
+  INDIAN
+  CHINESE
+  ITALIAN
+  JAPANESE
+  MEXICAN
+  THAI
+  CONTINENTAL
+  MIDDLE_EASTERN
+  MEDITERRANEAN
+  AMERICAN
+  MULTI_CUISINE
+  OTHER
+}
+
+enum PriceRange {
+  BUDGET
+  MODERATE
+  EXPENSIVE
+  LUXURY
+}
+
+enum BuffetSessionName {
+  BREAKFAST
+  BRUNCH
+  LUNCH
+  EVENING_SNACKS
+  DINNER
+}
+
+enum BookingType {
+  TABLE
+  BUFFET
+  EVENT_HALL
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  UNPAID
+  PAID
+  REFUNDED
+  PARTIALLY_REFUNDED
+  FAILED
+}
+
+enum NotificationType {
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  BOOKING_REMINDER
+  PAYMENT_RECEIVED
+  REVIEW_PROMPT
+  PROMOTIONAL
+  SYSTEM
+}
+
+// ─── USER ────────────────────────────────
+
+model User {
+  id        String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name      String
+  email     String   @unique
+  phone     String?  @unique
+  avatar    String?
+  passwordHash String?  // null for OAuth / Clerk phone-only users
+  role         UserRole @default(USER)
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  ownedRestaurants Restaurant[]   @relation("RestaurantOwner")
+  bookings         Booking[]
+  reviews          Review[]
+  notifications    Notification[]
+
+  @@index([email])
+  @@index([role])
+  @@map("users")
+}
+
+// ─── RESTAURANT ──────────────────────────
+
+model Restaurant {
+  id           String      @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  name         String
+  slug         String      @unique
+  description  String      @db.Text
+  address      String
+  city         String
+  state        String
+  pincode      String
+  latitude     Float
+  longitude    Float
+  cuisineType  CuisineType
+  priceRange   PriceRange
+  images       String[]
+  coverImage   String?
+  phone        String?
+  email        String?
+  website      String?
+  rating       Float       @default(0)
+  totalReviews Int         @default(0)
+  isVerified   Boolean     @default(false)
+  isActive     Boolean     @default(true)
+  ownerId      String      @db.Uuid
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  owner          User             @relation("RestaurantOwner", fields: [ownerId], references: [id])
+  operatingHours OperatingHours[]
+  tables         Table[]
+  buffetSessions BuffetSession[]
+  eventHalls     EventHall[]
+  bookings       Booking[]
+  reviews        Review[]
+
+  @@index([city])
+  @@index([cuisineType])
+  @@index([priceRange])
+  @@index([rating])
+  @@index([ownerId])
+  @@index([isActive, isVerified])
+  @@map("restaurants")
+}
+
+// ─── OPERATING HOURS ─────────────────────
+
+model OperatingHours {
+  id           String    @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  restaurantId String    @db.Uuid
+  dayOfWeek    DayOfWeek
+  openTime     String
+  closeTime    String
+  isClosed     Boolean   @default(false)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+
+  @@unique([restaurantId, dayOfWeek])
+  @@index([restaurantId])
+  @@map("operating_hours")
+}
+
+// ─── TABLE ───────────────────────────────
+
+model Table {
+  id           String  @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  restaurantId String  @db.Uuid
+  tableNumber  String
+  section      String?
+  capacity     Int
+  minCapacity  Int     @default(1)
+  isActive     Boolean @default(true)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  bookings   Booking[]
+
+  @@unique([restaurantId, tableNumber])
+  @@index([restaurantId])
+  @@map("tables")
+}
+
+// ─── BUFFET SESSION ──────────────────────
+
+model BuffetSession {
+  id           String            @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  restaurantId String            @db.Uuid
+  name         BuffetSessionName
+  description  String?
+  startTime    String
+  endTime      String
+  pricePerHead Decimal           @db.Decimal(10, 2)
+  childPrice   Decimal?          @db.Decimal(10, 2)
+  maxCapacity  Int
+  isVeg        Boolean           @default(false)
+  isActive     Boolean           @default(true)
+  images       String[]
+  highlights   String[]
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  bookings   Booking[]
+
+  @@index([restaurantId])
+  @@map("buffet_sessions")
+}
+
+// ─── EVENT HALL ──────────────────────────
+
+model EventHall {
+  id                      String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  restaurantId            String   @db.Uuid
+  name                    String
+  description             String?  @db.Text
+  capacity                Int
+  areaSqFt                Int?
+  pricePerDay             Decimal  @db.Decimal(12, 2)
+  depositAmount           Decimal? @db.Decimal(12, 2)
+  amenities               String[]
+  images                  String[]
+  isActive                Boolean  @default(true)
+  alcoholAllowed          Boolean  @default(false)
+  externalCateringAllowed Boolean  @default(false)
+  cateringIncluded        Boolean  @default(false)
+
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  bookings   Booking[]
+
+  @@index([restaurantId])
+  @@map("event_halls")
+}
+
+// ─── BOOKING ─────────────────────────────
+
+model Booking {
+  id                String        @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  referenceCode     String        @unique
+  userId            String        @db.Uuid
+  restaurantId      String        @db.Uuid
+  bookingType       BookingType
+
+  tableId           String?       @db.Uuid
+  buffetSessionId   String?       @db.Uuid
+  eventHallId       String?       @db.Uuid
+  eventName         String?
+  eventType         String?
+
+  date              DateTime      @db.Date
+  startTime         String
+  endTime           String
+  durationMinutes   Int?
+
+  partySize         Int
+  adultsCount       Int?
+  childrenCount     Int?
+
+  totalAmount       Decimal       @db.Decimal(12, 2)
+  depositAmount     Decimal?      @db.Decimal(12, 2)
+  currency          String        @default("INR")
+  paymentStatus     PaymentStatus @default(UNPAID)
+  paymentId         String?
+  paymentMethod     String?
+
+  status            BookingStatus @default(PENDING)
+  specialRequests   String?       @db.Text
+  internalNotes     String?       @db.Text
+  cancellationReason String?
+  cancelledAt       DateTime?
+  checkedInAt       DateTime?
+  completedAt       DateTime?
+
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  user          User           @relation(fields: [userId], references: [id])
+  restaurant    Restaurant     @relation(fields: [restaurantId], references: [id])
+  table         Table?         @relation(fields: [tableId], references: [id])
+  buffetSession BuffetSession? @relation(fields: [buffetSessionId], references: [id])
+  eventHall     EventHall?     @relation(fields: [eventHallId], references: [id])
+  review        Review?
+
+  @@index([userId])
+  @@index([restaurantId])
+  @@index([status])
+  @@index([date])
+  @@index([bookingType])
+  @@index([tableId, date])
+  @@index([buffetSessionId, date])
+  @@index([eventHallId, date])
+  @@map("bookings")
+}
+
+// ─── REVIEW ──────────────────────────────
+
+model Review {
+  id             String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId         String   @db.Uuid
+  restaurantId   String   @db.Uuid
+  bookingId      String?  @unique @db.Uuid
+  rating         Int
+  foodRating     Int?
+  serviceRating  Int?
+  ambienceRating Int?
+  comment        String?  @db.Text
+  images         String[]
+  isVerified     Boolean  @default(false)
+  helpfulCount   Int      @default(0)
+  ownerReply     String?  @db.Text
+  ownerRepliedAt DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id])
+  restaurant Restaurant @relation(fields: [restaurantId], references: [id])
+  booking    Booking?   @relation(fields: [bookingId], references: [id])
+
+  @@index([restaurantId])
+  @@index([userId])
+  @@map("reviews")
+}
+
+// ─── NOTIFICATION ────────────────────────
+
+model Notification {
+  id        String           @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId    String           @db.Uuid
+  type      NotificationType
+  title     String
+  message   String           @db.Text
+  data      Json?
+  isRead    Boolean          @default(false)
+  readAt    DateTime?
+  createdAt DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, isRead])
+  @@map("notifications")
+}

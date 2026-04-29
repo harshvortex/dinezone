@@ -1,0 +1,61 @@
+name: Mobile — EAS Preview Build
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+      - "packages/**"
+      - ".github/workflows/mobile.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "apps/mobile/**"
+
+jobs:
+  build-preview:
+    name: EAS Preview Build (Android APK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v3
+        with: { version: 9 }
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Setup Expo + EAS
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version:  latest
+          token:        ${{ secrets.EXPO_TOKEN }}
+
+      - name: Run EAS preview build (Android APK)
+        working-directory: apps/mobile
+        run: eas build --platform android --profile preview --non-interactive --json > build-output.json
+
+      - name: Extract APK URL
+        id: apk
+        run: |
+          APK_URL=$(cat apps/mobile/build-output.json | python3 -c "import sys,json; print(json.load(sys.stdin)[0]['artifacts']['buildUrl'])")
+          echo "apk_url=$APK_URL" >> $GITHUB_OUTPUT
+
+      - name: Comment APK link on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              body: `## 📱 Mobile Preview Build Ready\n\n**Android APK:** [Download](${{ steps.apk.outputs.apk_url }})\n\n> Built from commit \`${context.sha.slice(0,7)}\` · Profile: \`preview\``
+            });

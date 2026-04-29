@@ -1,0 +1,7 @@
+{
+  "name": "@dinespot/tsconfig",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Shared TypeScript configurations for DineSpot",
+  "files": ["base.json", "nextjs.json", "react-library.json", "node.json"]
+}

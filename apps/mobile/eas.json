@@ -1,0 +1,72 @@
+{
+  "cli": {
+    "version": ">= 10.0.0",
+    "requireCommit": false
+  },
+  "build": {
+    "node":   "20.x",
+    "pnpm":   "9.x"
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "production"
+      },
+      "ios": {
+        "appleId": "your@apple.id",
+        "ascAppId": "1234567890",
+        "appleTeamId": "XXXXXXXXXX"
+      }
+    }
+  },
+  "builds": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal",
+      "ios": {
+        "simulator": true,
+        "resourceClass": "m1-medium"
+      },
+      "android": {
+        "buildType": "apk",
+        "resourceClass": "medium"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL":    "http://localhost:4000/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "http://localhost:4000"
+      }
+    },
+    "preview": {
+      "distribution": "internal",
+      "ios": {
+        "simulator": false,
+        "resourceClass": "m1-medium"
+      },
+      "android": {
+        "buildType": "apk",
+        "resourceClass": "medium",
+        "gradleCommand": ":app:assembleRelease"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL":    "https://dinespot-api.up.railway.app/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "https://dinespot-api.up.railway.app"
+      }
+    },
+    "production": {
+      "distribution": "store",
+      "ios": {
+        "resourceClass": "m1-medium"
+      },
+      "android": {
+        "buildType": "app-bundle",
+        "resourceClass": "medium"
+      },
+      "channel": "production",
+      "env": {
+        "EXPO_PUBLIC_API_URL":    "https://dinespot-api.up.railway.app/api/v1",
+        "EXPO_PUBLIC_SOCKET_URL": "https://dinespot-api.up.railway.app"
+      }
+    }
+  }
+}

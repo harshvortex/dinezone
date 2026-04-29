@@ -1,0 +1,13 @@
+{
+  "extends": "@dinespot/tsconfig/base.json",
+  "compilerOptions": {
+    "lib": ["ES2020", "DOM"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@dinespot/types": ["../../packages/types/src/index.ts"]
+    }
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}

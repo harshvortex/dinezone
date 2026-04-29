@@ -1,0 +1,88 @@
+{
+  "name": "dinespot",
+  "version": "0.0.1",
+  "private": true,
+  "description": "DineSpot — Multi-restaurant discovery and booking platform",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "typecheck": "turbo run typecheck",
+    "clean": "turbo run clean && rimraf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,css}\" --ignore-path .gitignore",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,css}\" --ignore-path .gitignore",
+
+    "dev:web": "turbo run dev --filter=@dinespot/web",
+    "dev:api": "turbo run dev --filter=@dinespot/api",
+    "dev:mobile": "turbo run dev --filter=@dinespot/mobile",
+
+    "build:web": "turbo run build --filter=@dinespot/web",
+    "build:api": "turbo run build --filter=@dinespot/api",
+
+    "db:migrate": "pnpm --filter=@dinespot/api db:migrate",
+    "db:seed": "pnpm --filter=@dinespot/api db:seed",
+    "db:studio": "pnpm --filter=@dinespot/api db:studio",
+    "db:generate": "pnpm --filter=@dinespot/api db:generate",
+
+    "docker:up": "docker compose -f infra/docker/docker-compose.yml up -d",
+    "docker:down": "docker compose -f infra/docker/docker-compose.yml down",
+    "docker:logs": "docker compose -f infra/docker/docker-compose.yml logs -f",
+    "docker:reset": "docker compose -f infra/docker/docker-compose.yml down -v && pnpm docker:up",
+
+    "prepare": "husky"
+  },
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "eslint": "^8.57.0",
+    "husky": "^9.1.0",
+    "lint-staged": "^15.2.0",
+    "prettier": "^3.3.0",
+    "rimraf": "^6.0.0",
+    "turbo": "^2.1.0",
+    "typescript": "^5.5.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,css,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "turbo": {
+    "pipeline": {
+      "build": {
+        "dependsOn": ["^build"],
+        "outputs": [".next/**", "!.next/cache/**", "dist/**"]
+      },
+      "dev": {
+        "cache": false,
+        "persistent": true
+      },
+      "lint": {
+        "dependsOn": ["^lint"]
+      },
+      "typecheck": {
+        "dependsOn": ["^typecheck"]
+      },
+      "test": {
+        "dependsOn": ["^build"],
+        "outputs": ["coverage/**"]
+      },
+      "clean": {
+        "cache": false
+      }
+    }
+  }
+}
