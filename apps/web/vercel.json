@@ -1,7 +1,4 @@
 {
-  "buildCommand":   "cd ../.. && pnpm --filter=@dinespot/web build",
-  "outputDirectory":"apps/web/.next",
-  "installCommand": "pnpm install --frozen-lockfile",
   "framework":      "nextjs",
   "headers": [
     {
