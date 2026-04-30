@@ -5,7 +5,9 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "app.dinespot.mobile",
@@ -35,7 +37,13 @@
         "RECEIVE_BOOT_COMPLETED",
         "VIBRATE",
         "USE_BIOMETRIC",
-        "USE_FINGERPRINT"
+        "USE_FINGERPRINT",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_CALENDAR",
+        "android.permission.WRITE_CALENDAR"
       ],
       "config": {
         "googleMaps": {
@@ -48,23 +56,34 @@
       "expo-secure-store",
       [
         "expo-location",
-        { "locationAlwaysAndWhenInUsePermission": "DineSpot uses your location to find nearby restaurants." }
+        {
+          "locationAlwaysAndWhenInUsePermission": "DineSpot uses your location to find nearby restaurants."
+        }
       ],
       "expo-notifications",
       [
         "expo-camera",
-        { "cameraPermission": "DineSpot needs camera access to update your profile photo." }
+        {
+          "cameraPermission": "DineSpot needs camera access to update your profile photo."
+        }
       ],
       "expo-calendar"
     ],
     "scheme": "dinespot",
-    "experiments": { "typedRoutes": true },
+    "experiments": {
+      "typedRoutes": true
+    },
     "extra": {
-      "apiUrl":          "http://localhost:4000/api/v1",
-      "socketUrl":       "http://localhost:4000",
+      "apiUrl": "http://localhost:4000/api/v1",
+      "socketUrl": "http://localhost:4000",
       "cloudinaryCloud": "your_cloud_name",
-      "razorpayKeyId":   "rzp_test_CHANGE_ME",
-      "eas": { "projectId": "YOUR_EAS_PROJECT_ID" }
+      "razorpayKeyId": "rzp_test_CHANGE_ME",
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "dc1c8c4e-3578-4280-a7d7-a7a01e7f3091"
+      }
     }
   }
 }

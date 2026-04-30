@@ -1,26 +1,10 @@
 {
   "cli": {
     "version": ">= 10.0.0",
-    "requireCommit": false
+    "requireCommit": false,
+    "appVersionSource": "remote"
   },
   "build": {
-    "node":   "20.x",
-    "pnpm":   "9.x"
-  },
-  "submit": {
-    "production": {
-      "android": {
-        "serviceAccountKeyPath": "./google-service-account.json",
-        "track": "production"
-      },
-      "ios": {
-        "appleId": "your@apple.id",
-        "ascAppId": "1234567890",
-        "appleTeamId": "XXXXXXXXXX"
-      }
-    }
-  },
-  "builds": {
     "development": {
       "developmentClient": true,
       "distribution": "internal",
@@ -33,7 +17,7 @@
         "resourceClass": "medium"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL":    "http://localhost:4000/api/v1",
+        "EXPO_PUBLIC_API_URL": "http://localhost:4000/api/v1",
         "EXPO_PUBLIC_SOCKET_URL": "http://localhost:4000"
       }
     },
@@ -49,7 +33,7 @@
         "gradleCommand": ":app:assembleRelease"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL":    "https://dinespot-api.up.railway.app/api/v1",
+        "EXPO_PUBLIC_API_URL": "https://dinespot-api.up.railway.app/api/v1",
         "EXPO_PUBLIC_SOCKET_URL": "https://dinespot-api.up.railway.app"
       }
     },
@@ -64,8 +48,21 @@
       },
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_API_URL":    "https://dinespot-api.up.railway.app/api/v1",
+        "EXPO_PUBLIC_API_URL": "https://dinespot-api.up.railway.app/api/v1",
         "EXPO_PUBLIC_SOCKET_URL": "https://dinespot-api.up.railway.app"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "./google-service-account.json",
+        "track": "production"
+      },
+      "ios": {
+        "appleId": "your@apple.id",
+        "ascAppId": "1234567890",
+        "appleTeamId": "XXXXXXXXXX"
       }
     }
   }
