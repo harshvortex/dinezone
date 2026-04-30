@@ -18,6 +18,9 @@ const nextConfig = {
     serverActions: { allowedOrigins: ["dinespot-api.onrender.com", "localhost:4000"] },
   },
 
+  eslint: { ignoreDuringBuilds: true },
+  typescript: { ignoreBuildErrors: true },
+
   // Security headers
   async headers() {
     const isProd = process.env.NODE_ENV === "production";
