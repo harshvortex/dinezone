@@ -1,6 +1,6 @@
 services:
   # Database
-  - type: pgr
+  - type: postgres
     name: dinespot-db
     plan: free
     postgresMajorVersion: 16
