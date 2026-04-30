@@ -1,11 +1,10 @@
-services:
-  # Database
-  - type: postgres
-    name: dinespot-db
+databases:
+  - name: dinespot-db
     plan: free
-    postgresMajorVersion: 16
+    postgresMajorVersion: "16"
     region: singapore
 
+services:
   # Redis for queues/sockets
   - type: redis
     name: dinespot-redis
@@ -32,7 +31,7 @@ services:
           name: dinespot-redis
           property: connectionString
       - key: PORT
-        value: 10000
+        value: "10000"
       - key: JWT_SECRET
         generateValue: true
       # Add your Cloudinary, Razorpay, or Twilio keys in the Render Dashboard manually
