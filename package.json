@@ -35,7 +35,7 @@
     "docker:logs": "docker compose -f infra/docker/docker-compose.yml logs -f",
     "docker:reset": "docker compose -f infra/docker/docker-compose.yml down -v && pnpm docker:up",
 
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "workspaces": [
     "apps/*",
