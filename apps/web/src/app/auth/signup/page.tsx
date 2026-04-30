@@ -5,7 +5,7 @@ import { post, tokenStorage } from "@dinespot/utils/api";
 import type { AuthResponse } from "@dinespot/types";
 import Link from "next/link";
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const initialRole = searchParams.get("role") === "RESTAURANT_OWNER" ? "RESTAURANT_OWNER" : "USER";
@@ -177,5 +177,14 @@ export default function SignupPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+import { Suspense } from "react";
+export default function SignupPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <SignupContent />
+    </Suspense>
   );
 }

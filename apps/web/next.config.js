@@ -15,7 +15,7 @@ const nextConfig = {
 
   // ISR — static restaurant pages revalidate every 60 seconds
   experimental: {
-    serverActions: { allowedOrigins: ["dinespot-api.up.railway.app", "localhost:4000"] },
+    serverActions: { allowedOrigins: ["dinespot-api.onrender.com", "localhost:4000"] },
   },
 
   // Security headers
@@ -42,7 +42,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "font-src 'self' https://fonts.gstatic.com",
               "img-src 'self' data: blob: https://res.cloudinary.com https://maps.googleapis.com https://maps.gstatic.com https://lh3.googleusercontent.com",
-              "connect-src 'self' http://localhost:4000 ws://localhost:4000 https://dinespot-api.up.railway.app wss://dinespot-api.up.railway.app https://api.razorpay.com",
+              "connect-src 'self' http://localhost:4000 ws://localhost:4000 https://dinespot-api.onrender.com wss://dinespot-api.onrender.com https://api.razorpay.com",
               "frame-src https://api.razorpay.com",
               "worker-src 'self' blob:",
             ].join("; "),

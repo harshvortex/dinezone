@@ -29,7 +29,7 @@ const MOCK: any[] = [
   { id: "6", name: "Dragon House", slug: "dragon-house-delhi", city: "Delhi", cuisines: ["chinese"], priceRange: 2, averageRating: 4.3, totalReviews: 312, coverImageUrl: "https://images.unsplash.com/photo-1563245372-f21724e3856d?w=600&q=80", address: { city: "Delhi", line1: "Connaught Place" }, hasBuffet: true, hasEventHall: false },
 ];
 
-export default function RestaurantsPage() {
+function RestaurantsContent() {
   const sp = useSearchParams();
   const [search, setSearch] = useState(sp.get("q") || sp.get("location") || "");
   const [sortBy, setSortBy] = useState("rating");
@@ -195,5 +195,14 @@ export default function RestaurantsPage() {
         }
       `}</style>
     </div>
+  );
+}
+
+import { Suspense } from "react";
+export default function RestaurantsPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <RestaurantsContent />
+    </Suspense>
   );
 }
